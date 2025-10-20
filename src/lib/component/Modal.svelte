@@ -1,14 +1,14 @@
 <script>
-  import { fade, scale } from 'svelte/transition';
-  import { X } from 'lucide-svelte';
+  import { fade, scale } from "svelte/transition";
+  import { X } from "lucide-svelte";
 
   export let isOpen = false;
-  export let onClose = () => {};
   export let onSave = () => {};
   export let fields = [];
-  export let modalTitle = '';
+  export let modalTitle = "";
   export let initialValues = {};
 
+  let onClose = () => (isOpen = false);
   let formData = {};
   let errors = {};
 
@@ -16,28 +16,28 @@
   $: if (isOpen) {
     formData = {};
     errors = {};
-    fields.forEach(field => {
-      formData[field.name] = initialValues[field.name] ?? field.default ?? '';
-      errors[field.name] = '';
+    fields.forEach((field) => {
+      formData[field.name] = initialValues[field.name] ?? field.default ?? "";
+      errors[field.name] = "";
     });
   }
 
   const handleSubmit = () => {
     let hasError = false;
 
-    fields.forEach(field => {
+    fields.forEach((field) => {
       if (field.required && !formData[field.name]) {
         errors[field.name] = `${field.label} wajib diisi`;
         hasError = true;
       } else {
-        errors[field.name] = '';
+        errors[field.name] = "";
       }
     });
 
     if (!hasError) {
       const payload = { ...formData };
-      fields.forEach(f => {
-        if (f.type === 'number' && payload[f.name] === '') {
+      fields.forEach((f) => {
+        if (f.type === "number" && payload[f.name] === "") {
           payload[f.name] = null;
         }
       });
@@ -49,20 +49,30 @@
 </script>
 
 {#if isOpen}
-  <div class="p-4 fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50" transition:fade>
-    <div class="bg-white p-6 rounded-lg shadow-md w-full md:max-w-3xl space-y-4" transition:scale>
+  <div
+    class="p-4 fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
+    transition:fade
+  >
+    <div
+      class="bg-white p-6 rounded-lg shadow-md w-full md:max-w-md space-y-4"
+      transition:scale
+    >
       <div class="flex justify-between items-center">
         <h2 class="text-lg font-semibold">{modalTitle}</h2>
         <button on:click={onClose} class="text-gray-500 hover:text-gray-700">
           <X size={20} />
         </button>
       </div>
-      <div class=" grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1">
         {#each fields as field}
           <div class="flex flex-col">
-            <label for="{field.name}" class=" text-xs md:text-sm font-medium text-gray-700">{field.label}</label>
+            <label
+              for={field.name}
+              class=" text-xs md:text-sm font-medium text-gray-700"
+              >{field.label}</label
+            >
             <input
-              type={field.type || 'text'}
+              type={field.type || "text"}
               bind:value={formData[field.name]}
               placeholder={field.placeholder}
               class="w-full px-1 py-1 border rounded-md focus:outline-none placeholder:text-xs focus:ring focus:border-blue-500"
@@ -83,7 +93,7 @@
         </button>
         <button
           on:click={handleSubmit}
-          class="bg-gray-900 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded"
+          class="bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded"
         >
           Simpan
         </button>
