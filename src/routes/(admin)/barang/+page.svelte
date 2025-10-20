@@ -279,6 +279,7 @@
 <Modal
   modalTitle="Tambah Barang"
   {fields}
+  variant={1}
   onSave={handleSave}
   bind:isOpen={showModal}
   on:submit={handleSubmit}
@@ -288,7 +289,7 @@
 <Modal
   modalTitle="Edit Barang"
   {fields}
-  ,
+  variant={1}
   initialValues={selectedItem}
   onSave={handleEdit}
   bind:isOpen={showEditModal}

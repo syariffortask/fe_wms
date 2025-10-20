@@ -1,6 +1,7 @@
 <script>
   import { alertConfirm, alertError, alertSuccess } from "$lib/alert";
   import AuthGuard from "$lib/component/AuthGuard.svelte";
+  import Modal from "$lib/component/Modal.svelte";
   import { Eye } from "lucide-svelte";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
@@ -11,22 +12,58 @@
   } from "$lib/api/transaksi";
 
   let transaksi = [];
-  let searchTerm = ""; // 🔍 input pencarian
+  let searchTerm = "";
   let currentPage = 1;
   const itemsPerPage = 10;
+  let OpenAddModal = false;
+
+  const fields = [
+    { name: "sku", label: "SKU", type: "text", required: true },
+    { name: "name", label: "Nama Produk", type: "text", required: true },
+    {
+      name: "kategori",
+      label: "Kategori",
+      type: "select",
+      placeholder: "Pilih kategori",
+      options: [
+        { label: "Sabun", value: "sabun" },
+        { label: "Lotion", value: "lotion" },
+        { label: "Shampoo", value: "shampoo" },
+      ],
+    },
+    { name: "stok", label: "Stok", type: "number" },
+  ];
+
+  // 🔽 state untuk sorting
+  let sortField = "trx_code";
+  let sortOrder = "asc"; // asc | desc
 
   onMount(async () => {
     transaksi = await fetchTransaksi();
   });
 
-  // 🔍 Filter berdasarkan kode transaksi
+  // 🔍 filter berdasarkan kode transaksi
   $: filteredTransaksi = transaksi.filter((t) =>
     t.trx_code.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // 📄 Pagination
-  $: totalPages = Math.ceil(filteredTransaksi.length / itemsPerPage);
-  $: paginatedTransaksi = filteredTransaksi.slice(
+  // 🔄 urutkan data
+  $: sortedTransaksi = [...filteredTransaksi].sort((a, b) => {
+    let valA = a[sortField];
+    let valB = b[sortField];
+
+    // buat string jadi lowercase biar adil
+    if (typeof valA === "string") valA = valA.toLowerCase();
+    if (typeof valB === "string") valB = valB.toLowerCase();
+
+    if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+    if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  // 🔢 pagination
+  $: totalPages = Math.ceil(sortedTransaksi.length / itemsPerPage);
+  $: paginatedTransaksi = sortedTransaksi.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -39,11 +76,20 @@
     if (currentPage > 1) currentPage--;
   }
 
-  // 🔎 Lihat detail transaksi
+  // ⬆️⬇️ toggle urutan
+  function sortBy(field) {
+    if (sortField === field) {
+      sortOrder = sortOrder === "asc" ? "desc" : "asc";
+    } else {
+      sortField = field;
+      sortOrder = "asc";
+    }
+  }
+
+  // 👁️ lihat detail transaksi
   async function handleDetail(trx) {
-    // const detail = await getDetailTransaksi(trx.id);
     console.log("Detail transaksi:", trx);
-    // misal kamu mau pindah ke halaman detail
+    // const detail = await getDetailTransaksi(trx.id);
     // goto(`/transaksi/${trx.id}`);
   }
 </script>
@@ -53,7 +99,7 @@
 <!-- 🔍 Pencarian & Tambah -->
 <div class="mb-6 flex items-center justify-between">
   <button
-    on:click={() => (showModal = true)}
+    on:click={() => (OpenAddModal = true)}
     class="bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-sm"
   >
     + Tambah
@@ -77,13 +123,52 @@
     >
       <tr>
         <th class="p-3 text-center">No</th>
-        <th class="p-3 text-left">Kode</th>
-        <th class="p-3 text-left">Tipe</th>
-        <th class="p-3 text-left">Catatan</th>
-        <th class="p-3 text-left">Tanggal</th>
+
+        <!-- klik header untuk sort -->
+        <th
+          class="p-3 text-left cursor-pointer select-none"
+          on:click={() => sortBy("trx_code")}
+        >
+          Kode
+          {#if sortField === "trx_code"}
+            <span>{sortOrder === "asc" ? "▲" : "▼"}</span>
+          {/if}
+        </th>
+
+        <th
+          class="p-3 text-left cursor-pointer select-none"
+          on:click={() => sortBy("trx_type")}
+        >
+          Tipe
+          {#if sortField === "trx_type"}
+            <span>{sortOrder === "asc" ? "▲" : "▼"}</span>
+          {/if}
+        </th>
+
+        <th
+          class="p-3 text-left cursor-pointer select-none"
+          on:click={() => sortBy("note")}
+        >
+          Catatan
+          {#if sortField === "note"}
+            <span>{sortOrder === "asc" ? "▲" : "▼"}</span>
+          {/if}
+        </th>
+
+        <th
+          class="p-3 text-left cursor-pointer select-none"
+          on:click={() => sortBy("created_at")}
+        >
+          Tanggal
+          {#if sortField === "created_at"}
+            <span>{sortOrder === "asc" ? "▲" : "▼"}</span>
+          {/if}
+        </th>
+
         <th class="p-3 text-center">Aksi</th>
       </tr>
     </thead>
+
     <tbody class="divide-y divide-gray-100">
       {#if paginatedTransaksi.length === 0}
         <tr>
@@ -122,8 +207,8 @@
 <div class="flex items-center justify-between mt-6">
   <div class="text-sm text-gray-600">
     Menampilkan {(currentPage - 1) * itemsPerPage + 1} -
-    {Math.min(currentPage * itemsPerPage, filteredTransaksi.length)} dari
-    {filteredTransaksi.length} data
+    {Math.min(currentPage * itemsPerPage, sortedTransaksi.length)} dari
+    {sortedTransaksi.length} data
   </div>
   <div class="flex items-center space-x-2">
     <button
@@ -143,3 +228,5 @@
     </button>
   </div>
 </div>
+
+<Modal modalTitle="Tambah Transaksi" isOpen={OpenAddModal} {fields} />
