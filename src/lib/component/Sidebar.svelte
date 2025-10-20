@@ -61,9 +61,7 @@
 <aside
   class={`hidden md:flex transition-all duration-300 ${minimized ? "w-20" : "w-64"} bg-[#CC8F62] text-white p-4 space-y-6 flex-col`}
 >
-  <div
-    class="flex items-center justify-center border-b border-gray-500 pb-4 mb-2"
-  >
+  <div class="flex items-center justify-center border-b border-white pb-4 mb-2">
     <img
       src={minimized ? "img/icon.png" : "img/cpi.png"}
       alt="Logo"

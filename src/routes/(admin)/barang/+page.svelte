@@ -1,14 +1,21 @@
 <script>
   import { onMount } from "svelte";
-  import { fetchBarang, createBarang } from "$lib/api/barang";
+  import {
+    fetchBarang,
+    createBarang,
+    deleteBarang,
+    updateBarang,
+  } from "$lib/api/barang";
   import AuthGuard from "$lib/component/AuthGuard.svelte";
   import Modal from "$lib/component/Modal.svelte";
-  import { alertSuccess } from "$lib/alert";
+  import { alertSuccess, alertError, alertConfirm } from "$lib/alert";
 
   let barang = [];
   let searchTerm = "";
   let currentPage = 1;
   let showModal = false;
+  let showEditModal = false;
+  let selectedItem = null;
   const fields = [
     { name: "name", label: "Nama Barang", required: true },
     { name: "sku", label: "SKU", required: true },
@@ -69,12 +76,47 @@
   }
 
   async function handleSave(data) {
-    console.log(data);
     const response = await createBarang(data);
     // kasih alert kalo sukses
     if (response) alertSuccess("Berhasil", "Barang berhasil ditambahkan");
     barang = [...barang, response];
     showModal = false;
+  }
+
+  async function editButton(data) {
+    // aktifkan modal edit
+    showEditModal = true;
+    selectedItem = data;
+  }
+
+  async function handleEdit(data) {
+    const response = await updateBarang(selectedItem.id, data);
+    // kasih alert kalo sukses
+    if (response) alertSuccess("Berhasil", "Barang berhasil diubah");
+    barang = barang.map((item) => {
+      if (item.id === selectedItem.id) {
+        return response;
+      }
+      return item;
+    });
+    showEditModal = false;
+  }
+
+  async function handleDelete(id) {
+    // kasih alert warning dulu
+    const result = await alertConfirm(
+      "Peringatan",
+      "Anda yakin ingin menghapus barang ini?"
+    );
+    if (result.isConfirmed) {
+      const response = await deleteBarang(id);
+      if (response) {
+        alertSuccess("Berhasil", "Barang berhasil dihapus");
+        barang = barang.filter((item) => item.id !== id);
+      } else {
+        alertError("Gagal", "Barang gagal dihapus");
+      }
+    }
   }
 </script>
 
@@ -145,6 +187,15 @@
               >{sortOrder === "asc" ? "▲" : "▼"}</span
             >{/if}
         </th>
+        <th
+          class="p-3 text-left cursor-pointer select-none"
+          on:click={() => sortBy("updated_at")}
+        >
+          Diubah {#if sortField === "updated_at"}<span
+              >{sortOrder === "asc" ? "▲" : "▼"}</span
+            >{/if}
+        </th>
+        <th class="p-3 text-left">Aksi</th>
       </tr>
     </thead>
 
@@ -170,6 +221,26 @@
                 .replace("T", "-") // ganti T jadi -
                 .replace(/(\.\d{2})\d+/, "$1")}
               <!-- potong milidetik setelah 2 digit -->
+            </td>
+            <td class="p-3 text-gray-700">
+              {item.updated_at
+                .replace("T", "-") // ganti T jadi -
+                .replace(/(\.\d{2})\d+/, "$1")}
+              <!-- potong milidetik setelah 2 digit -->
+            </td>
+            <td>
+              <button
+                class="bg-amber-500 px-2 hover:bg-amber-600 text-white rounded-md"
+                on:click={() => editButton(item)}
+              >
+                Edit
+              </button>
+              <button
+                on:click={() => handleDelete(item.id)}
+                class="bg-red-500 px-2 hover:bg-red-800 text-white rounded-md"
+              >
+                Hapus
+              </button>
             </td>
           </tr>
         {/each}
@@ -210,6 +281,17 @@
   {fields}
   onSave={handleSave}
   bind:isOpen={showModal}
+  on:submit={handleSubmit}
+  on:cancel={handleCancel}
+/>
+
+<Modal
+  modalTitle="Edit Barang"
+  {fields}
+  ,
+  initialValues={selectedItem}
+  onSave={handleEdit}
+  bind:isOpen={showEditModal}
   on:submit={handleSubmit}
   on:cancel={handleCancel}
 />
