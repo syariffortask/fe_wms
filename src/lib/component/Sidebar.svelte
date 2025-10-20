@@ -6,6 +6,7 @@
     Image,
     Package,
     LogOut,
+    WalletCards,
     LayoutDashboardIcon,
     X,
     Home,
@@ -49,6 +50,12 @@
     },
     { label: "Barang", icon: Package, href: "/barang", roles: ["admin"] },
     {
+      label: "Transaksi",
+      icon: WalletCards,
+      href: "/transaksi",
+      roles: ["admin", "user"],
+    },
+    {
       label: "Logout",
       icon: LogOut,
       roles: ["admin", "user"],
@@ -63,7 +70,7 @@
 >
   <div class="flex items-center justify-center border-b border-white pb-4 mb-2">
     <img
-      src={minimized ? "img/icon.png" : "img/cpi.png"}
+      src={minimized ? "/img/icon.png" : "/img/cpi.png"}
       alt="Logo"
       class={minimized ? "h-8" : "h-10"}
     />
