@@ -30,7 +30,7 @@
       name: "Jenis",
       label: "Jenis",
       type: "select",
-      placeholder: "Pilih kategori",
+      placeholder: "Pilih jenis transaksi",
       options: [
         { label: "Transaksi Masuk", value: "in" },
         { label: "Transaksi Keluar", value: "out" },
@@ -47,12 +47,12 @@
 
 
 
-  // 🔍 filter berdasarkan kode transaksi
+  // filter berdasarkan kode transaksi
   $: filteredTransaksi = transaksi.filter((t) =>
     t.trx_code.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // 🔄 urutkan data
+  // urutkan data
   $: sortedTransaksi = [...filteredTransaksi].sort((a, b) => {
     let valA = a[sortField];
     let valB = b[sortField];
@@ -66,7 +66,7 @@
     return 0;
   });
 
-  // 🔢 pagination
+  // pagination
   $: totalPages = Math.ceil(sortedTransaksi.length / itemsPerPage);
   $: paginatedTransaksi = sortedTransaksi.slice(
     (currentPage - 1) * itemsPerPage,
@@ -81,7 +81,7 @@
     if (currentPage > 1) currentPage--;
   }
 
-  // ⬆️⬇️ toggle urutan
+  //  toggle urutan
   function sortBy(field) {
     if (sortField === field) {
       sortOrder = sortOrder === "asc" ? "desc" : "asc";
@@ -91,24 +91,22 @@
     }
   }
 
-  // 👁️ lihat detail transaksi
+  // lihat detail transaksi
   async function handleDetail(trx) {
-    console.log("Detail transaksi:", trx);
-    // const detail = await getDetailTransaksi(trx.id);
-    // goto(`/transaksi/${trx.id}`);
+    goto(`/transaksi/${trx.id}`);
   }
 </script>
 
 <AuthGuard allowRole={["admin"]} />
 
-<!-- 🔍 Pencarian & Tambah -->
+<!-- Pencarian & Tambah -->
 <div class="mb-3 flex items-center justify-between">
   <button on:click={() => (OpenAddModal = true)} class="bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-sm">Tambah</button>
 
   <input type="text" placeholder="🔍 Cari transaksi..." bind:value={searchTerm} class="border border-gray-300 focus:border-amber-500 focus:ring focus:ring-amber-100 rounded-lg px-4 py-2 m:w-1/2 shadow-sm"/>
 </div>
 
-<!-- 📋 Table -->
+<!-- Table -->
 <div class="bg-white shadow-md rounded-lg overflow-x-auto border border-gray-200">
   <table class="min-w-full text-sm">
     <thead class="bg-gradient-to-r from-amber-500 to-amber-600 text-white uppercase text-xs">
@@ -179,7 +177,7 @@
   </table>
 </div>
 
-<!-- 📄 Pagination -->
+<!--Pagination -->
 <div class="flex items-center justify-between mt-6">
   <div class="text-sm text-gray-600">
     Menampilkan {(currentPage - 1) * itemsPerPage + 1} -
@@ -211,13 +209,15 @@
   {fields}
   barangOptions={barang.map(b => ({ label: b.name, value: b.id }))}
   onSave={async (payload) => {
-    console.log("Payload ke API:", payload);
+  console.log("Payload ke API:", payload);
+
+  try {
     const trx = await createTransaksi(payload);
-    if (trx) {
-      // kasih alert kalo sukses
-      alertSuccess("Berhasil", "Transaksi berhasil ditambahkan");
-      transaksi = [...transaksi, trx];
-      OpenAddModal = false;
-    }
-  }}
+    alertSuccess("Berhasil", "Transaksi berhasil dibuat");
+    transaksi = [...transaksi, trx];
+    OpenAddModal = false;
+  } catch (err) {
+    alertError("Gagal", err.message || "Terjadi kesalahan pada server");
+  }
+}}
 />

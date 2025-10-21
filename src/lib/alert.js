@@ -7,7 +7,7 @@ export function alertError(tittle, msg) {
     title: tittle,
     text: msg,
     showConfirmButton: false,
-    timer: 1500,
+    timer: 2500,
   });
 }
 
