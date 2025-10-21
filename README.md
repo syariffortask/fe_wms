@@ -1,6 +1,6 @@
 # 🧭 WMS Frontend (SvelteKit)
 
-Proyek ini adalah **Frontend untuk Warehouse Management System (WMS)** yang dibangun menggunakan **SvelteKit + TailwindCSS**.  
+Proyek ini adalah **Frontend untuk Warehouse Management System (WMS)** Sederhan yang dibangun menggunakan **SvelteKit + TailwindCSS**.  
 Tujuannya untuk mempermudah pengelolaan transaksi barang masuk/keluar secara cepat, ringan, dan modern.
 
 ---
