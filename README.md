@@ -1,38 +1,25 @@
-# sv
+# 🧭 WMS Frontend (SvelteKit)
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Proyek ini adalah **Frontend untuk Warehouse Management System (WMS)** yang dibangun menggunakan **SvelteKit + TailwindCSS**.  
+Tujuannya untuk mempermudah pengelolaan transaksi barang masuk/keluar secara cepat, ringan, dan modern.
 
-## Creating a project
+---
 
-If you're seeing this, you've probably already done this step. Congrats!
+## 🚀 Persyaratan Awal
 
-```sh
-# create a new project in the current directory
-npx sv create
+Sebelum menjalankan project ini, pastikan kamu sudah menginstall:
 
-# create a new project in my-app
-npx sv create my-app
-```
+- [Node.js](https://nodejs.org/en/) (versi **18** atau lebih baru)
+- [npm](https://www.npmjs.com/) (biasanya sudah terinstall bersama Node.js)
+- Backend API sudah berjalan (cek repo: [BE WMS](https://github.com/syariffortask/wms))
 
-## Developing
+---
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## ⚙️ Langkah Setup
 
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+1. **Clone repository ini**
+   ```bash
+   git clone https://github.com/syariffortask/fe_wms.git
+   cd fe_wms
+   npm install
+   ```
