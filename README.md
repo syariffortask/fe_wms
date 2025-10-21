@@ -25,6 +25,7 @@ Sebelum menjalankan project ini, pastikan kamu sudah menginstall:
 
 2. **Siapkan file environment**
 Salin file contoh .env.example menjadi .env
+buat seperti contoh ini
 ```
 VITE_API_URL=http://localhost:8000
 
