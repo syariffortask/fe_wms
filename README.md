@@ -23,14 +23,14 @@ Sebelum menjalankan project ini, pastikan kamu sudah menginstall:
    npm install
    ```
 
-2. ** Siapkan file environment**
+2. **Siapkan file environment**
 Salin file contoh .env.example menjadi .env
 ```
 VITE_API_URL=http://localhost:8000
 
 ```
 
-3. ** Jalankan server development**
+3. **Jalankan server development**
 ```
 npm run dev
 ```
