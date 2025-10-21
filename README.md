@@ -11,7 +11,6 @@ Sebelum menjalankan project ini, pastikan kamu sudah menginstall:
 
 - [Node.js](https://nodejs.org/en/) (versi **18** atau lebih baru)
 - [npm](https://www.npmjs.com/) (biasanya sudah terinstall bersama Node.js)
-- Backend API sudah berjalan (cek repo: [BE WMS](https://github.com/syariffortask/wms))
 
 ---
 
@@ -23,3 +22,15 @@ Sebelum menjalankan project ini, pastikan kamu sudah menginstall:
    cd fe_wms
    npm install
    ```
+
+2. ** Siapkan file environment**
+Salin file contoh .env.example menjadi .env
+```
+VITE_API_URL=http://localhost:8000
+
+```
+
+3. ** Jalankan server development**
+```
+npm run dev
+```
