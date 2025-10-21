@@ -139,16 +139,16 @@
 
 <!-- Table Container -->
 <div
-  class="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200"
+  class="bg-white shadow-md rounded-lg overflow-x-auto border border-gray-200"
 >
-  <table class="min-w-full text-sm">
+  <table class="min-w-full text-sm ">
     <thead
       class="bg-gradient-to-r from-amber-500 to-amber-600 text-white uppercase text-xs"
     >
       <tr>
-        <th class="p-3 text-left">No</th>
+        <th class="p-2 md:p-3 text-left">No</th>
         <th
-          class="p-3 text-left cursor-pointer select-none"
+          class="p-2 md:p-3 text-left cursor-pointer select-none"
           on:click={() => sortBy("sku")}
         >
           SKU {#if sortField === "sku"}<span
@@ -156,7 +156,7 @@
             >{/if}
         </th>
         <th
-          class="p-3 text-left cursor-pointer select-none"
+          class="p-2 md:p-3 text-left cursor-pointer select-none"
           on:click={() => sortBy("name")}
         >
           Nama Barang {#if sortField === "name"}<span
@@ -164,7 +164,7 @@
             >{/if}
         </th>
         <th
-          class="p-3 text-left cursor-pointer select-none"
+          class="p-2 md:p-3 text-left cursor-pointer select-none"
           on:click={() => sortBy("stock")}
         >
           Stok {#if sortField === "stock"}<span
@@ -172,7 +172,7 @@
             >{/if}
         </th>
         <th
-          class="p-3 text-left cursor-pointer select-none"
+          class="p-2 md:p-3 text-left cursor-pointer select-none"
           on:click={() => sortBy("rack")}
         >
           Rak {#if sortField === "rack"}<span
@@ -180,7 +180,7 @@
             >{/if}
         </th>
         <th
-          class="p-3 text-left cursor-pointer select-none"
+          class="p-2 md:p-3 text-left cursor-pointer select-none"
           on:click={() => sortBy("created_at")}
         >
           Dibuat {#if sortField === "created_at"}<span
@@ -188,14 +188,14 @@
             >{/if}
         </th>
         <th
-          class="p-3 text-left cursor-pointer select-none"
+          class="p-2 md:p-3 text-left cursor-pointer select-none"
           on:click={() => sortBy("updated_at")}
         >
           Diubah {#if sortField === "updated_at"}<span
               >{sortOrder === "asc" ? "▲" : "▼"}</span
             >{/if}
         </th>
-        <th class="p-3 text-left">Aksi</th>
+        <th class="p-2 md:p-3 text-left">Aksi</th>
       </tr>
     </thead>
 
@@ -209,20 +209,20 @@
       {:else}
         {#each paginatedBarang as item, i}
           <tr class="hover:bg-blue-50 transition">
-            <td class="p-3 text-gray-700"
+            <td class="p-2 md:p-3 text-gray-700"
               >{(currentPage - 1) * itemsPerPage + i + 1}</td
             >
-            <td class="p-3 font-mono text-gray-700">{item.sku}</td>
-            <td class="p-3 text-gray-800 font-medium">{item.name}</td>
-            <td class="p-3 text-gray-700">{item.stock}</td>
-            <td class="p-3 text-gray-700">{item.rack}</td>
-            <td class="p-3 text-gray-700">
+            <td class="p-2 md:p-3 font-mono text-gray-700">{item.sku}</td>
+            <td class="p-2 md:p-3 text-gray-800 font-medium">{item.name}</td>
+            <td class="p-2 md:p-3 text-gray-700">{item.stock}</td>
+            <td class="p-2 md:p-3 text-gray-700">{item.rack}</td>
+            <td class="p-2 md:p-3 text-gray-700">
               {item.created_at
                 .replace("T", "-") // ganti T jadi -
                 .replace(/(\.\d{2})\d+/, "$1")}
               <!-- potong milidetik setelah 2 digit -->
             </td>
-            <td class="p-3 text-gray-700">
+            <td class="p-2 md:p-3 text-gray-700">
               {item.updated_at
                 .replace("T", "-") // ganti T jadi -
                 .replace(/(\.\d{2})\d+/, "$1")}

@@ -1,46 +1,51 @@
 <script>
   import { alertConfirm, alertError, alertSuccess } from "$lib/alert";
   import AuthGuard from "$lib/component/AuthGuard.svelte";
-  import Modal from "$lib/component/Modal.svelte";
   import { Eye } from "lucide-svelte";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
-  import {
-    fetchTransaksi,
-    createTransaksi,
-    getDetailTransaksi,
-  } from "$lib/api/transaksi";
+  import { fetchBarang } from "$lib/api/barang";
+  import { fetchTransaksi, createTransaksi, getDetailTransaksi} from "$lib/api/transaksi";
+    import ModalTransaksi from "$lib/component/ModalTransaksi.svelte";
 
   let transaksi = [];
+  let barang = [];
   let searchTerm = "";
   let currentPage = 1;
   const itemsPerPage = 10;
   let OpenAddModal = false;
 
-  const fields = [
-    { name: "sku", label: "SKU", type: "text", required: true },
-    { name: "name", label: "Nama Produk", type: "text", required: true },
-    {
-      name: "kategori",
-      label: "Kategori",
-      type: "select",
-      placeholder: "Pilih kategori",
-      options: [
-        { label: "Sabun", value: "sabun" },
-        { label: "Lotion", value: "lotion" },
-        { label: "Shampoo", value: "shampoo" },
-      ],
-    },
-    { name: "stok", label: "Stok", type: "number" },
-  ];
-
-  // 🔽 state untuk sorting
+  // state untuk sorting
   let sortField = "trx_code";
   let sortOrder = "asc"; // asc | desc
 
   onMount(async () => {
     transaksi = await fetchTransaksi();
+    barang = await fetchBarang();
+    
   });
+
+  const fields = [
+    {
+      name: "Jenis",
+      label: "Jenis",
+      type: "select",
+      placeholder: "Pilih kategori",
+      options: [
+        { label: "Transaksi Masuk", value: "in" },
+        { label: "Transaksi Keluar", value: "out" },
+      ],
+    },
+    {
+      name: "Note",
+      label: "Catatan",
+      type: "text",
+      required: false,
+      placeholder: "Masukkan catatan (opsional)",
+    },
+  ];
+
+
 
   // 🔍 filter berdasarkan kode transaksi
   $: filteredTransaksi = transaksi.filter((t) =>
@@ -97,68 +102,42 @@
 <AuthGuard allowRole={["admin"]} />
 
 <!-- 🔍 Pencarian & Tambah -->
-<div class="mb-6 flex items-center justify-between">
-  <button
-    on:click={() => (OpenAddModal = true)}
-    class="bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-sm"
-  >
-    + Tambah
-  </button>
+<div class="mb-3 flex items-center justify-between">
+  <button on:click={() => (OpenAddModal = true)} class="bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-sm">Tambah</button>
 
-  <input
-    type="text"
-    placeholder="🔍 Cari transaksi..."
-    bind:value={searchTerm}
-    class="border border-gray-300 focus:border-amber-500 focus:ring focus:ring-amber-100 rounded-lg px-4 py-2 m:w-1/2 shadow-sm"
-  />
+  <input type="text" placeholder="🔍 Cari transaksi..." bind:value={searchTerm} class="border border-gray-300 focus:border-amber-500 focus:ring focus:ring-amber-100 rounded-lg px-4 py-2 m:w-1/2 shadow-sm"/>
 </div>
 
 <!-- 📋 Table -->
-<div
-  class="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200"
->
+<div class="bg-white shadow-md rounded-lg overflow-x-auto border border-gray-200">
   <table class="min-w-full text-sm">
-    <thead
-      class="bg-gradient-to-r from-amber-500 to-amber-600 text-white uppercase text-xs"
-    >
+    <thead class="bg-gradient-to-r from-amber-500 to-amber-600 text-white uppercase text-xs">
       <tr>
         <th class="p-3 text-center">No</th>
 
         <!-- klik header untuk sort -->
-        <th
-          class="p-3 text-left cursor-pointer select-none"
-          on:click={() => sortBy("trx_code")}
-        >
+        <th class="p-3 text-left cursor-pointer select-none" on:click={() => sortBy("trx_code")}>
           Kode
           {#if sortField === "trx_code"}
             <span>{sortOrder === "asc" ? "▲" : "▼"}</span>
           {/if}
         </th>
 
-        <th
-          class="p-3 text-left cursor-pointer select-none"
-          on:click={() => sortBy("trx_type")}
-        >
+        <th class="p-3 text-left cursor-pointer select-none" on:click={() => sortBy("trx_type")}>
           Tipe
           {#if sortField === "trx_type"}
             <span>{sortOrder === "asc" ? "▲" : "▼"}</span>
           {/if}
         </th>
 
-        <th
-          class="p-3 text-left cursor-pointer select-none"
-          on:click={() => sortBy("note")}
-        >
+        <th class="p-3 text-left cursor-pointer select-none" on:click={() => sortBy("note")}>
           Catatan
           {#if sortField === "note"}
             <span>{sortOrder === "asc" ? "▲" : "▼"}</span>
           {/if}
         </th>
 
-        <th
-          class="p-3 text-left cursor-pointer select-none"
-          on:click={() => sortBy("created_at")}
-        >
+        <th class="p-3 text-left cursor-pointer select-none" on:click={() => sortBy("created_at")}>
           Tanggal
           {#if sortField === "created_at"}
             <span>{sortOrder === "asc" ? "▲" : "▼"}</span>
@@ -189,10 +168,7 @@
               {trx.created_at.replace("T", "-").replace(/(\.\d{2})\d+/, "$1")}
             </td>
             <td class="p-3 text-center">
-              <button
-                class="bg-amber-500 hover:bg-amber-600 text-white rounded-md p-1.5"
-                on:click={() => handleDetail(trx)}
-              >
+              <button class="bg-amber-500 hover:bg-amber-600 text-white rounded-md p-1.5" on:click={() => handleDetail(trx)}>
                 <Eye size={16} />
               </button>
             </td>
@@ -229,4 +205,19 @@
   </div>
 </div>
 
-<Modal modalTitle="Tambah Transaksi" isOpen={OpenAddModal} {fields} />
+<ModalTransaksi
+  bind:isOpen={OpenAddModal}
+  modalTitle="Tambah Transaksi"
+  {fields}
+  barangOptions={barang.map(b => ({ label: b.name, value: b.id }))}
+  onSave={async (payload) => {
+    console.log("Payload ke API:", payload);
+    const trx = await createTransaksi(payload);
+    if (trx) {
+      // kasih alert kalo sukses
+      alertSuccess("Berhasil", "Transaksi berhasil ditambahkan");
+      transaksi = [...transaksi, trx];
+      OpenAddModal = false;
+    }
+  }}
+/>
